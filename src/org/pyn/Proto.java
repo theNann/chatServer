@@ -28,11 +28,14 @@ public class Proto {
         String s = new String(b, 2, len, "UTF-8");
         JSONObject jsonObject = new JSONObject(s);
         String type = (String)jsonObject.get("type");
+
         if(type.compareTo("LoginRequest") == 0) {
             return new LoginRequest((String)jsonObject.get("name"));
         } else if(type.compareTo("ChatRequest") == 0) {
             ChatRequest cr = new ChatRequest();
             //return cr;
+        } else if(type.compareTo("AddFriRequest") == 0) {
+            return new AddFriRequest((String)jsonObject.get("name"));
         }
         return null;
     }

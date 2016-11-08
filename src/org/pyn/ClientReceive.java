@@ -3,9 +3,10 @@ package org.pyn;
 import org.pyn.message.Request;
 
 import java.io.IOException;
-import java.io.OutputStream;
+import java.io.InputStream;
+import java.io.UnsupportedEncodingException;
 import java.net.Socket;
-import java.util.LinkedList;
+
 
 /**
  * Created by pyn on 2016/10/20.
@@ -14,49 +15,57 @@ import java.util.LinkedList;
 public class ClientReceive implements Runnable{
     private Socket socket;
     private Proto proto;
-    public ClientReceive(Socket socket) {
+    private RequestQueue queue;
+
+    public ClientReceive(Socket socket, RequestQueue queue) {
         this.socket = socket;
         this.proto = new Proto();
-        receiveQue.clear();
+        this.queue = queue;
     }
 
     @Override
     public void run() {
-        while(true) {
-            if(receiveQue.isEmpty()) {
-                continue;
-            }
-            MsgElement msgElement = receiveQue.pop();
-//            Socket from = msgElement.getFrom();
-            Message msg = msgElement.getMsg();
-//            try {
-//                msg = doReceiveMsg(from);
-//            } catch (IOException e) {
-//                try {
-//                    socket.getInputStream().close();
-//                    socket.close();
-//                } catch (IOException e1) {
-//                    e1.printStackTrace();
-//                }
-//                break;
-//            }
+        boolean ok = true;
+        Request req = null;
+        while(ok) {
             try {
-                doSendMsg(msg);
+                req = doReceiveMsg();
+                queue.push(req);
+                System.out.println("ClientReceive : " + req);
             } catch (IOException e) {
-                try {
-                    socket.getInputStream().close();
-                    socket.close();
-                } catch (IOException e1) {
-                    e1.printStackTrace();
-                }
-                break;
+                ok = false;
             }
         }
     }
 
-    private void doSendMsg(Message msg) throws IOException {
-        OutputStream output = socket.getOutputStream();
-        byte[] b = proto.encode(msg);
-        output.write(b);
+    private Request doReceiveMsg() throws IOException {
+        InputStream input = socket.getInputStream();
+        byte[] in = new byte[65538];
+        int len = 0;
+        int curlen = 0;
+
+        while(curlen < 2) {
+            curlen += input.read(in, curlen, 2 - curlen);
+        }
+
+        len = byteToNum(in);
+        curlen = 0;
+        while(curlen < len) {
+            curlen += input.read(in,curlen+2,len - curlen);
+        }
+
+        Request req = null;
+        try {
+            req = proto.decode(in, len);
+        } catch(UnsupportedEncodingException e) {
+            e.printStackTrace();
+        }
+        return req;
+    }
+
+    private int byteToNum(byte[] b) {
+        int len = 0;
+        len = (int)b[1] << 8 | b[0];
+        return len;
     }
 }

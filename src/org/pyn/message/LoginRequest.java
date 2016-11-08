@@ -5,6 +5,11 @@ package org.pyn.message;
  */
 public class LoginRequest extends Request{
     private String name;
+
+    public LoginRequest() {
+        this.type = "LoginRequest";
+    }
+
     public LoginRequest(String name) {
         this.type = "LoginRequest";
         this.name = name;
@@ -15,5 +20,12 @@ public class LoginRequest extends Request{
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    @Override
+    public String toString() {
+        return "LoginRequest{" +
+                "name='" + name + '\'' +
+                ", type=" + type + "}";
     }
 }

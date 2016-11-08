@@ -1,27 +1,25 @@
 package org.pyn;
-
-import org.pyn.message.Request;
-
 import java.net.Socket;
-import java.util.LinkedList;
-
+import java.util.Map;
 /**
  * Created by pyn on 2016/11/1.
  */
 public class Connection {
-
-    private LinkedList<Request> queue = new LinkedList<Request>();
+    private RequestQueue queue;
     private Socket socket;
     private ClientReceive recv;
     private ClientSend send;
+    private Map<String,Socket> nameSocketTable;
 
-    public Connection(Socket socket) {
+    public Connection(Socket socket, Map<String,Socket> nameSocketTable) {
+        this.queue = new RequestQueue();
         this.socket = socket;
+        this.nameSocketTable = nameSocketTable;
     }
 
     public void start() {
         recv = new ClientReceive(socket, queue);
-        send = new ClientSend(socket, queue);
+        send = new ClientSend(socket, queue,nameSocketTable);
         Thread crtThread = new Thread(recv);
         Thread cstThread = new Thread(send);
         crtThread.start();
