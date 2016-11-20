@@ -1,5 +1,7 @@
 package org.pyn.message;
 
+import org.json.JSONObject;
+
 /**
  * Created by pyn on 2016/11/1.
  */
@@ -27,5 +29,10 @@ public class LoginRequest extends Request{
         return "LoginRequest{" +
                 "name='" + name + '\'' +
                 ", type=" + type + "}";
+    }
+
+    @Override
+    public void decode(JSONObject jsonObject) {
+        setName((String)jsonObject.get("name"));
     }
 }

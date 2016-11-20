@@ -1,9 +1,11 @@
 package org.pyn.message;
 
+import org.json.JSONObject;
+
 /**
  * Created by pyn on 2016/11/1.
  */
-public class Request {
+public abstract class Request {
     public String type;
 
     public String getType() {
@@ -13,4 +15,6 @@ public class Request {
     public void setType(String type) {
         this.type = type;
     }
+
+    public abstract void decode(JSONObject jsonObject);
 }

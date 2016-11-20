@@ -7,7 +7,7 @@ import org.json.JSONObject;
  */
 public class AddFriResponse extends Response {
     private String result;
-
+    private String name;
     public AddFriResponse() {
         this.type = "AddFriResponse";
     }
@@ -24,11 +24,20 @@ public class AddFriResponse extends Response {
         this.result = result;
     }
 
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
     @Override
     public byte[] encode() {
         JSONObject jsonObject = new JSONObject();
         jsonObject.put("type", type);
         jsonObject.put("result", result);
+        jsonObject.put("name",name);
         return jsonObject.toString().getBytes();
     }
 

@@ -1,5 +1,7 @@
 package org.pyn.message;
 
+import org.json.JSONObject;
+
 /**
  * Created by pyn on 2016/11/3.
  */
@@ -28,5 +30,10 @@ public class AddFriRequest extends Request{
         return "AddFriRequest{" +
                 "name='" + name + '\'' +
                 '}';
+    }
+
+    @Override
+    public void decode(JSONObject jsonObject) {
+        setName((String)jsonObject.get("name"));
     }
 }
